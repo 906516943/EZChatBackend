@@ -1,0 +1,60 @@
+version: '3.4'
+
+services:
+  auth:
+    container_name: auth
+    image: ${DOCKER_REGISTRY-}auth
+    build:
+      context: .
+      dockerfile: Auth/Dockerfile
+    networks:
+        - backend
+    ports:
+        - '10240:25565' 
+    environment:
+        - 'ASPNETCORE_HTTP_PORTS=25565'
+        - 'ASPNETCORE_ENVIRONMENT=Development'
+    
+  chatsender:
+    container_name: chat-sender
+    image: ${DOCKER_REGISTRY-}chatsender
+    build:
+      context: .
+      dockerfile: ChatSender/Dockerfile
+    networks:
+        - backend
+    ports:
+        - '10241:25566' 
+    environment:
+        - 'ASPNETCORE_HTTP_PORTS=25566'
+        - 'ASPNETCORE_ENVIRONMENT=Development'
+
+  user:
+    container_name: user
+    image: ${DOCKER_REGISTRY-}user
+    build:
+      context: .
+      dockerfile: User/Dockerfile
+    networks:
+        - backend
+    ports:
+        - '10242:25567' 
+    environment:
+        - 'ASPNETCORE_HTTP_PORTS=25567'
+        - 'ASPNETCORE_ENVIRONMENT=Development'
+
+  redis:
+    container_name: redis
+    image: redis:7.2.4-alpine
+    command: redis-server --port 6380
+    expose:
+        - '6380'
+    networks:
+        - backend
+
+networks:
+  backend:
+    driver: bridge
+
+
+
