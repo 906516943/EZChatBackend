@@ -9,13 +9,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth", "Auth\Auth.csproj", 
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{D1D0DC3B-F973-4053-9DC0-82862FA215D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth.Core", "..\Auth.Core\Auth.Core.csproj", "{7F85E877-E55B-4EA3-AFAA-4DB8B8F6870F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth.Core", "Auth.Core\Auth.Core.csproj", "{7F85E877-E55B-4EA3-AFAA-4DB8B8F6870F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User", "User\User.csproj", "{D3732416-09BB-48DC-AD94-A5E9F96E3EF2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Persistence", "..\User.Persistence\User.Persistence.csproj", "{EB44968D-92C3-4A8E-B3BC-8961EB199E06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Persistence", "User.Persistence\User.Persistence.csproj", "{EB44968D-92C3-4A8E-B3BC-8961EB199E06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Core", "..\User.Core\User.Core.csproj", "{85DF3323-6620-4C8E-A1D0-1692A35FDAE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Core", "User.Core\User.Core.csproj", "{85DF3323-6620-4C8E-A1D0-1692A35FDAE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
