@@ -43,6 +43,30 @@ services:
         - 'ASPNETCORE_HTTP_PORTS=25567'
         - 'ASPNETCORE_ENVIRONMENT=Development'
 
+  db_adminer:
+    container_name: db-adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+        - backend
+
+  user_db:
+    container_name: user-db
+    image: mysql
+    restart: always
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=password'
+      - 'MYSQL_USER=root'
+      - 'MYSQL_TCP_PORT=6381'
+    expose:
+      - '6381'
+    networks:
+        - backend
+    volumes:
+        - db-user-data:/var/lib/mysql
+
   redis:
     container_name: redis
     image: redis:7.2.4-alpine
@@ -56,5 +80,7 @@ networks:
   backend:
     driver: bridge
 
+volumes:
+  db-user-data:
 
 

@@ -31,9 +31,7 @@ namespace Auth.Controllers
             try
             {
                 var info = new AuthInfo(DateTime.Now.AddSeconds(30), Guid.NewGuid());
-                var auth = _authService.MakeAuthRecord(info);
-
-                await auth.Save();
+                var auth = await _authService.MakeAuthRecord(info);
 
                 return Ok(auth.Token);
             }
@@ -53,7 +51,7 @@ namespace Auth.Controllers
             {
                 var auth = await _authService.GetAuthRecord(token);
 
-                return Ok(auth.AuthInfo);
+                return Ok(await auth.GetAuthInfo());
             }
             catch (Exception e)
             {
