@@ -20,6 +20,33 @@ namespace User.Core.Models
             _id = id;
         }
 
+        public async Task<GroupInfo> GetInfo() 
+        {
+            return await _repo.GetGroupInfo(_id);
+        }
 
+        public async Task UpdateInfo(GroupInfo info) 
+        {
+            await _repo.UpdateGroupInfo(_id, info);
+        }
+
+        public async Task<List<User>> GetUsers() 
+        {
+            var users = (await _repo.GetGroupUsers(_id))
+                .Select(x => new User(_repo, x))
+                .ToList();
+        
+            return users;
+        }
+
+        public async Task AddUser(User user) 
+        {
+            await _repo.AddGroupUser(_id, user.Id);
+        }
+
+        public async Task RemoveUser(User user) 
+        { 
+            await _repo.RemoveGroupUser(_id,user.Id);
+        }
     }
 }

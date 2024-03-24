@@ -11,7 +11,7 @@ namespace User.Core.Repos
     {
         public Task<UserInfo> GetUserInfo(Guid id);
 
-        public Task SetUserInfo(Guid id, UserInfo userInfo);
+        public Task<Guid> SetUserInfo(UserInfo userInfo);
 
         public Task UpdateUserInfo(Guid id, UserInfo userInfo);
 
@@ -21,7 +21,7 @@ namespace User.Core.Repos
 
         public Task<GroupInfo> GetGroupInfo(Guid id);
 
-        public Task SetGroupInfo(Guid id, GroupInfo groupInfo);
+        public Task<Guid> SetGroupInfo(GroupInfo groupInfo);
 
         public Task UpdateGroupInfo(Guid id, GroupInfo groupInfo);
 
@@ -43,5 +43,6 @@ namespace User.Core.Repos
 
         public Task RemoveUserGroup(Guid userId, Guid groupId);
 
+        public Task UseTransaction(Func<Task> fun);
     }
 }

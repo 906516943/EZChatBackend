@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using User.Core.Repos;
+using User.Core.Services;
+using User.Persistence;
 using User.Persistence.Contexts;
 using User.Persistence.Contexts.Models;
 
@@ -7,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls("http://*:" + Environment.GetEnvironmentVariable("ASPNETCORE_HTTP_PORTS"));
 
 // Add services to the container.
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConn")!));

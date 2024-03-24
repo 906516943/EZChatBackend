@@ -126,34 +126,101 @@ namespace User.Persistence
             return new UserInfo(id, res.Name);
         }
 
-        public Task RemoveGroupUser(Guid groupId, Guid userId)
+        public async Task RemoveGroupUser(Guid groupId, Guid userId)
         {
-            throw new NotImplementedException();
+            var group = await _context.Groups.Where(x => x.Id == groupId)
+                .Include(x => x.Users)
+                .FirstOrDefaultAsync();
+
+            if (group is null)
+                throw new InvalidDataException("Group not found");
+
+            var user = group.Users.Where(x => x.Id == userId).FirstOrDefault();
+
+            if (user is null)
+                throw new InvalidDataException("User not found");
+
+            group.Users.Remove(user);
+
+            await _context.Ctx.SaveChangesAsync();
         }
 
-        public Task RemoveUserGroup(Guid userId, Guid groupId)
+        public async Task RemoveUserGroup(Guid userId, Guid groupId)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.Where(x => x.Id == userId)
+                .Include(x => x.Groups)
+                .FirstOrDefaultAsync();
+
+            if (user is null)
+                throw new InvalidDataException("User not found");
+
+            var group = user.Groups.Where(x => x.Id == groupId).FirstOrDefault();
+
+            if (group is null)
+                throw new InvalidDataException("Group not found");
+
+            user.Groups.Remove(group);
+
+            await _context.Ctx.SaveChangesAsync();
         }
 
-        public Task SetGroupInfo(Guid id, GroupInfo groupInfo)
+        public async Task<Guid> SetGroupInfo(GroupInfo groupInfo)
         {
-            throw new NotImplementedException();
+            var ezGroup = new EzGroup
+            {
+                Name = groupInfo.Name,
+            };
+
+            _context.Groups.Add(ezGroup);
+            await _context.Ctx.SaveChangesAsync();
+
+            return ezGroup.Id;
         }
 
-        public Task SetUserInfo(Guid id, UserInfo userInfo)
+        public async Task<Guid> SetUserInfo(UserInfo userInfo)
         {
-            throw new NotImplementedException();
+            var ezUser = new EzUser 
+            { 
+                Name = userInfo.Name, 
+            };
+
+            _context.Users.Add(ezUser);
+            await _context.Ctx.SaveChangesAsync();
+
+            return ezUser.Id;
+
         }
 
-        public Task UpdateGroupInfo(Guid id, GroupInfo groupInfo)
+        public async Task UpdateGroupInfo(Guid id, GroupInfo groupInfo)
         {
-            throw new NotImplementedException();
+            var group = await _context.Groups.FindAsync(id);
+
+            if (group is null)
+                throw new InvalidDataException("Group not found");
+
+            group.Name = groupInfo.Name;
+
+            await _context.Ctx.SaveChangesAsync();
         }
 
-        public Task UpdateUserInfo(Guid id, UserInfo userInfo)
+        public async Task UpdateUserInfo(Guid id, UserInfo userInfo)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.FindAsync(id);
+
+            if (user is null)
+                throw new InvalidDataException("User not found");
+
+            user.Name = userInfo.Name;
+            
+            await _context.Ctx.SaveChangesAsync();
+        }
+
+        public async Task UseTransaction(Func<Task> fun)
+        {
+            using (var trans = await _context.Ctx.Database.BeginTransactionAsync()) 
+            {
+                await fun();
+            }
         }
     }
 }
