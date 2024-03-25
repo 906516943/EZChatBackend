@@ -89,7 +89,7 @@ namespace User.Persistence
             if (res is null)
                 throw new InvalidDataException("Group not found");
 
-            return new GroupInfo(id, res.Name);
+            return new GroupInfo(res.Name);
         }
 
         public async Task<List<Guid>> GetGroupUsers(Guid id)
@@ -123,7 +123,7 @@ namespace User.Persistence
             if (res is null)
                 throw new InvalidDataException("User not found");
 
-            return new UserInfo(id, res.Name);
+            return new UserInfo(res.Name);
         }
 
         public async Task RemoveGroupUser(Guid groupId, Guid userId)

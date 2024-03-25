@@ -14,6 +14,9 @@ services:
     environment:
         - 'ASPNETCORE_HTTP_PORTS=25565'
         - 'ASPNETCORE_ENVIRONMENT=Development'
+    configs:
+      - source: api-servers
+        target: /apiServers.json
     
   chatsender:
     container_name: chat-sender
@@ -28,6 +31,9 @@ services:
     environment:
         - 'ASPNETCORE_HTTP_PORTS=25566'
         - 'ASPNETCORE_ENVIRONMENT=Development'
+    configs:
+      - source: api-servers
+        target: /apiServers.json
 
   user:
     container_name: user
@@ -42,6 +48,9 @@ services:
     environment:
         - 'ASPNETCORE_HTTP_PORTS=25567'
         - 'ASPNETCORE_ENVIRONMENT=Development'
+    configs:
+      - source: api-servers
+        target: /apiServers.json
 
   db_adminer:
     container_name: db-adminer
@@ -79,6 +88,10 @@ services:
 networks:
   backend:
     driver: bridge
+
+configs:
+    api-servers:
+        file: ./apiServers.json
 
 volumes:
   db-user-data:

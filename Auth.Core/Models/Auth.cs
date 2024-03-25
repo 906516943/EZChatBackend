@@ -1,4 +1,4 @@
-﻿using Auth.Core.Service;
+﻿using Auth.Core.Repos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,25 +12,25 @@ namespace Auth.Core.Models
 
         public string Token { get; private set; }
 
-        private readonly IAuthService _authService;
+        private readonly IAuthRepo _authRepo;
 
-        public Auth(string token, IAuthService service) 
+        public Auth(string token, IAuthRepo repo) 
         {
             Token = token;
-            _authService = service;
+            _authRepo = repo;
         }
 
         public async Task<AuthInfo> GetAuthInfo() 
         {
-            return await _authService.GetAuthInfo(Token);
+            return await _authRepo.GetAuthInfo(Token);
         }
 
         public async Task UpdateExpireDate(DateTime newDate) 
         {
-            var authInfo = await _authService.GetAuthInfo(Token);
+            var authInfo = await _authRepo.GetAuthInfo(Token);
             var newAuthInfo = authInfo with { ExpireDate = newDate };
 
-            await _authService.SetAuthInfo(Token, newAuthInfo);
+            await _authRepo.SetAuthInfo(Token, newAuthInfo);
         }
     }
 }

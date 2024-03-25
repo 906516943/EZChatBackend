@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using User.Core.Models;
 using User.Core.Repos;
 using User.Core.Services;
 using User.Persistence;
@@ -7,7 +8,6 @@ using User.Persistence.Contexts;
 using User.Persistence.Contexts.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls("http://*:" + Environment.GetEnvironmentVariable("ASPNETCORE_HTTP_PORTS"));
 
 // Add services to the container.
 builder.Services.AddScoped<IUserRepo, UserRepo>();
@@ -22,19 +22,23 @@ builder.Services.AddDbContext<IUserContext, UserContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.WebHost.UseUrls("http://*:" + Environment.GetEnvironmentVariable("ASPNETCORE_HTTP_PORTS"));
+
+builder.Configuration.AddJsonFile("/apiServers.json");
+builder.Services.Configure<ApiServers>(builder.Configuration.GetSection("apiServers"));
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 CreateDb(app);
 
-
 // Configure the HTTP request pipeline.
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
 
 

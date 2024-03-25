@@ -1,7 +1,7 @@
 ﻿using Auth.Core;
 using Auth.Core.Core;
 using Auth.Core.Models;
-using Auth.Core.Service;
+using Auth.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
 using System.Net;

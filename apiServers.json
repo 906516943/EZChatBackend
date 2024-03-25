@@ -1,0 +1,7 @@
+{
+  "apiServers": {
+    "UserApi": "user:25567",
+    "ChatSenderApi": "chat-sender:25566",
+    "AuthApi": "auth:25565"
+  }
+}

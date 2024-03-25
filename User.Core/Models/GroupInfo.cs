@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace User.Core.Models
 {
-    public record class GroupInfo(Guid GroupId, string Name);
+    public record class GroupInfo(string Name);
 }
