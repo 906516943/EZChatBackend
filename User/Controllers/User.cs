@@ -26,6 +26,7 @@ namespace User.Controllers
         {
             try
             {
+                Console.WriteLine("asbasbasbasbasb");
                 var user = await _userService.MakeNewUser(userInfo);
                 return Ok(user.Id);
             }
