@@ -36,7 +36,7 @@ namespace Auth.Controllers
                 var userInfo = new UserInfo(Name: $"User@" + (new Random()).Next());
                 var userId = await _userApi.MakeUser(userInfo);
 
-                var info = new AuthInfo(DateTime.Now.AddDays(30), userId);
+                var info = new AuthInfo(DateTime.UtcNow.AddDays(30), userId);
                 var auth = await _authService.MakeAuthRecord(info);
 
                 return Ok(auth.Token);

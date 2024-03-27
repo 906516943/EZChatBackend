@@ -37,7 +37,15 @@ namespace User.Core.Services
 
         public async Task<Models.User> MakeNewUser(UserInfo info) 
         {
-            return new Models.User(_repo, await _repo.SetUserInfo(info));
+            var userId = await _repo.SetUserInfo(info);
+
+            //user default added to the world channel
+            var worldChannelId = new Group(_repo, await _repo.GetGroupIdByName("World Channel"));
+            var user = new Models.User(_repo, userId);
+
+            await user.AddGroup(worldChannelId);
+
+            return user;
         }
 
         public async Task RemoveUser(Models.User user) 

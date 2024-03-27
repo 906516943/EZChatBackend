@@ -24,13 +24,7 @@ namespace ChatSender.Core.Externals
 
         public async Task<AuthInfo> GetAuthInfo(string token) 
         {
-            var respone = await _httpClient.GetAsync($"/AuthApi/AuthInfo?token={token}");
-
-            if (!respone.IsSuccessStatusCode)
-                throw new InvalidDataException("Failed to access /AuthApi/AuthInfo");
-
-            var str = await respone.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<AuthInfo>(str, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            return await _httpClient.DoGet<AuthInfo>($"/AuthApi/AuthInfo?token={token}");
         }
     }
 }

@@ -82,6 +82,16 @@ namespace User.Persistence
             await _context.Ctx.SaveChangesAsync();
         }
 
+        public async Task<Guid> GetGroupIdByName(string name)
+        {
+            var group = await _context.Groups.Where(x => x.Name == name).FirstOrDefaultAsync();
+
+            if (group is null)
+                throw new InvalidDataException("Group not found");
+
+            return group.Id;
+        }
+
         public async Task<GroupInfo> GetGroupInfo(Guid id)
         {
             var res = await _context.Groups.FindAsync(id);
@@ -106,8 +116,8 @@ namespace User.Persistence
 
         public async Task<List<Guid>> GetUserGroups(Guid id)
         {
-            var res = await _context.Users.Where(x => x.Id == id)
-                .Include(x => x.Groups)
+            var res = await _context.Users.Include(x => x.Groups)
+                .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
 
             if (res is null)

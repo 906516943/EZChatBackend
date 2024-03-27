@@ -38,7 +38,7 @@ namespace Auth.Core.Externals
 
         public async Task<UserInfo> GetUser(Guid id) 
         {
-            var respone = await _httpClient.GetAsync($"/UserApi/User?id={id.ToString()}");
+            var respone = await _httpClient.GetAsync($"/UserApi/User/{id.ToString()}");
 
             if (!respone.IsSuccessStatusCode)
                 throw new InvalidDataException("Failed to access /UserApi/User");

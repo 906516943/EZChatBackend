@@ -10,7 +10,13 @@ namespace ChatSender.Core.Externals
 {
     public interface IUserApi 
     {
-        Task<UserInfo> GetUser(Guid id);
+        Task<UserInfo> GetUserInfo(Guid id);
+
+        Task<List<Guid>> GetUserGroups(Guid userId);
+
+        Task<GroupInfo> GetGroupInfo(Guid id);
+
+        Task<List<Guid>> GetGroupUsers(Guid id);
     }
 
     public class UserApi : IUserApi
@@ -22,15 +28,25 @@ namespace ChatSender.Core.Externals
             _httpClient = httpClient;
         }
 
-        public async Task<UserInfo> GetUser(Guid id)
+
+        public async Task<UserInfo> GetUserInfo(Guid id)
         {
-            var respone = await _httpClient.GetAsync($"/UserApi/User?id={id.ToString()}");
+            return await _httpClient.DoGet<UserInfo>($"/UserApi/User?id={id}");
+        }
 
-            if (!respone.IsSuccessStatusCode)
-                throw new InvalidDataException("Failed to access /UserApi/User");
+        public async Task<List<Guid>> GetUserGroups(Guid userId) 
+        {
+            return await _httpClient.DoGet<List<Guid>>($"/UserApi/User/{userId}/Groups");
+        }
 
-            var str = await respone.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<UserInfo>(str, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        public async Task<GroupInfo> GetGroupInfo(Guid id) 
+        {
+            return await _httpClient.DoGet<GroupInfo>($"/UserApi/Group/{id}");
+        }
+
+        public async Task<List<Guid>> GetGroupUsers(Guid id) 
+        {
+            return await _httpClient.DoGet<List<Guid>>($"/UserApi/Group/{id}/Users");
         }
     }
 }

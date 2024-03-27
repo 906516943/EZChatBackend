@@ -44,5 +44,9 @@ namespace User.Core.Repos
         public Task RemoveUserGroup(Guid userId, Guid groupId);
 
         public Task UseTransaction(Func<Task> fun);
+
+
+
+        public Task<Guid> GetGroupIdByName(string name);
     }
 }
