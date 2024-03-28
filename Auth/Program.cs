@@ -20,6 +20,10 @@ builder.WebHost.UseUrls("http://*:" + Environment.GetEnvironmentVariable("ASPNET
 builder.Configuration.AddJsonFile("/apiServers.json");
 builder.Services.Configure<ApiServers>(builder.Configuration.GetSection("apiServers"));
 
+builder.Services.AddCors(p =>
+{
+    p.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 
 //configure http clients
 var configuration = builder.Configuration;
@@ -32,7 +36,8 @@ builder.Services.AddHttpClient<IUserApi, UserApi>(x =>
 
 
 var app = builder.Build();
-
+app.UseRouting();
+app.UseCors();
 if (app.Environment.IsDevelopment()) 
 {
     app.UseSwagger();

@@ -9,7 +9,7 @@
             var random = new Random();
             random.NextBytes(bytes);
 
-            return Convert.ToBase64String(guid.ToByteArray().Concat(bytes).ToArray());
+            return Convert.ToBase64String(guid.ToByteArray().Concat(bytes).ToArray()).Replace("+","").Replace("/", "").Replace("=", "");
         }
     }
 }

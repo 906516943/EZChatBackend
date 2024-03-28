@@ -22,13 +22,18 @@ builder.Services.AddDbContext<IUserContext, UserContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(p =>
+{
+    p.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 builder.WebHost.UseUrls("http://*:" + Environment.GetEnvironmentVariable("ASPNETCORE_HTTP_PORTS"));
 
 builder.Configuration.AddJsonFile("/apiServers.json");
 builder.Services.Configure<ApiServers>(builder.Configuration.GetSection("apiServers"));
 
 var app = builder.Build();
-
+app.UseCors();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

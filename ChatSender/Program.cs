@@ -16,6 +16,7 @@ builder.Services.Configure<ApiServers>(builder.Configuration.GetSection("apiServ
 //services
 builder.Services.AddScoped<IUserApi, UserApi>();
 builder.Services.AddScoped<IAuthApi, AuthApi>();
+builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddSingleton<GlobalService>();
 
 //configure http clients
