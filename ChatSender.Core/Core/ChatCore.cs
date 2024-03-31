@@ -13,8 +13,8 @@ namespace ChatSender.Core.Core
         public async Task<Message> MakeReturnMessage(Message message, Models.User user, DateTime lastSentTime) 
         {
             
-            if ((DateTime.UtcNow - lastSentTime).Milliseconds < 100)
-                throw new InvalidDataException("Last sent time interval is < 100ms");
+            if ((DateTime.UtcNow - lastSentTime).Milliseconds < 20)
+                throw new InvalidDataException("Last sent time interval is < 20ms");
 
 
             if (string.IsNullOrEmpty(message.Text) || message.Text.Length > 2000)
@@ -31,7 +31,7 @@ namespace ChatSender.Core.Core
             ret.MessageId = Guid.NewGuid();
             ret.ChannelId = message.ChannelId;
             ret.SenderId = user.Id;
-            ret.TimeStamp = (long)DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds;
+            ret.TimeStamp = (long)(DateTime.UtcNow.Subtract(DateTime.UnixEpoch).TotalSeconds * 1000);
             ret.Text = message.Text;
             ret.Images = ret.Images;
 

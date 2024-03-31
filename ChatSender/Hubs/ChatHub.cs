@@ -23,7 +23,7 @@ namespace ChatSender.Hubs
             _logger = logger;
         }
 
-        public async Task<bool> SendMessage(Message msg)
+        public async Task<Guid?> SendMessage(Message msg)
         {
             try 
             {
@@ -32,7 +32,7 @@ namespace ChatSender.Hubs
 
 
                 //validate message and make return message
-                var retMessage = _core.MakeReturnMessage(msg, user, lastSentTime);
+                var retMessage = await _core.MakeReturnMessage(msg, user, lastSentTime);
                 _globalService.UpdateUserLastSentTime(Context.ConnectionId);
 
 
@@ -57,7 +57,7 @@ namespace ChatSender.Hubs
                 }
 
 
-                return true;
+                return retMessage.MessageId;
             
             }catch (Exception ex) 
             {
@@ -65,7 +65,7 @@ namespace ChatSender.Hubs
                 _logger.LogDebug(ex.ToString());
             }
 
-            return false;
+            return null;
         }
 
         public async Task<bool> SendAuthUser(string token)

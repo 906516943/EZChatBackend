@@ -35,12 +35,28 @@ services:
       - source: api-servers
         target: /apiServers.json
 
+  user_db:
+    container_name: user-db
+    image: mysql
+    restart: always
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=password'
+      - 'MYSQL_TCP_PORT=6381'
+    expose:
+      - '6381'
+    networks:
+        - backend
+    volumes:
+        - db-user-data:/var/lib/mysql
+
   user:
     container_name: user
     image: ${DOCKER_REGISTRY-}user
     build:
       context: .
       dockerfile: User/Dockerfile
+    depends_on:
+      - user_db
     networks:
         - backend
     ports:
@@ -60,21 +76,6 @@ services:
       - 8080:8080
     networks:
         - backend
-
-  user_db:
-    container_name: user-db
-    image: mysql
-    restart: always
-    environment:
-      - 'MYSQL_ROOT_PASSWORD=password'
-      - 'MYSQL_USER=root'
-      - 'MYSQL_TCP_PORT=6381'
-    expose:
-      - '6381'
-    networks:
-        - backend
-    volumes:
-        - db-user-data:/var/lib/mysql
 
   redis:
     container_name: redis

@@ -11,7 +11,7 @@ namespace ChatSender.Core.Models
         /// <summary>
         /// Unique message Id
         /// </summary>
-        public Guid MessageId { get; set; }
+        public Guid? MessageId { get; set; }
 
         /// <summary>
         /// Destination
@@ -21,12 +21,12 @@ namespace ChatSender.Core.Models
         /// <summary>
         /// Sender
         /// </summary>
-        public Guid SenderId { get; set; }
+        public Guid? SenderId { get; set; }
 
         /// <summary>
         /// UTC unix timestamp
         /// </summary>
-        public long TimeStamp { get; set; }
+        public long? TimeStamp { get; set; }
 
         /// <summary>
         /// Text

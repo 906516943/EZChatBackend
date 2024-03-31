@@ -22,7 +22,7 @@ namespace ChatSender.Core.Services
         public void OnUserConnect(string connectionId, Models.User user) 
         {
             _connectionId2UserLookup.Add(connectionId, user);
-            _connectionId2LastSentTime.Add(connectionId, DateTime.MinValue);
+            _connectionId2LastSentTime.Add(connectionId, DateTime.UtcNow.AddSeconds(-10));
             _userId2ConnectionIdLookup.Add(user.Id, connectionId);
         }
 
@@ -62,7 +62,7 @@ namespace ChatSender.Core.Services
         {
             _connectionId2LastSentTime.TryGetValue(connectionId, out var userLastSentTime);
 
-            if (userLastSentTime == default(DateTime))
+            if (userLastSentTime == default)
                 throw new InvalidDataException("User not found");
 
             return userLastSentTime;
