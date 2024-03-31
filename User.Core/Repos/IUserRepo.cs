@@ -9,7 +9,7 @@ namespace User.Core.Repos
 {
     public interface IUserRepo
     {
-        public Task<UserInfo> GetUserInfo(Guid id);
+        public Task<List<UserInfo>> GetUserInfo(List<Guid> ids);
 
         public Task<Guid> SetUserInfo(UserInfo userInfo);
 
@@ -19,7 +19,7 @@ namespace User.Core.Repos
 
 
 
-        public Task<GroupInfo> GetGroupInfo(Guid id);
+        public Task<List<GroupInfo>> GetGroupInfo(List<Guid> ids);
 
         public Task<Guid> SetGroupInfo(GroupInfo groupInfo);
 

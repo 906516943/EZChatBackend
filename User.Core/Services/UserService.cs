@@ -24,6 +24,12 @@ namespace User.Core.Services
         Task RemoveGroup(Models.Group group);
 
         Models.Group GetGroup(Guid id);
+
+
+
+        Task<List<UserInfo>> GetUsersInfo(List<Guid> ids);
+
+        Task<List<GroupInfo>> GetGroupsInfo(List<Guid> ids);
     }
 
     public class UserService: IUserService
@@ -71,6 +77,16 @@ namespace User.Core.Services
         public Models.Group GetGroup(Guid id) 
         {
             return new Models.Group(_repo, id);
+        }
+
+        public async Task<List<GroupInfo>> GetGroupsInfo(List<Guid> ids)
+        {
+            return await _repo.GetGroupInfo(ids);
+        }
+
+        public async Task<List<UserInfo>> GetUsersInfo(List<Guid> ids)
+        {
+            return await _repo.GetUserInfo(ids);
         }
     }
 }

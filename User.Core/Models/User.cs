@@ -22,7 +22,7 @@ namespace User.Core.Models
 
         public async Task<UserInfo> GetInfo() 
         {
-            return await _repo.GetUserInfo(_id);
+            return (await _repo.GetUserInfo(new List<Guid>() { _id })).First();
         }
 
         public async Task UpdateInfo(UserInfo info) 

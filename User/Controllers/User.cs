@@ -53,6 +53,22 @@ namespace User.Controllers
             }
         }
 
+        [HttpPost("Users")]
+        [ProducesResponseType(typeof(List<UserInfo>), ((int)HttpStatusCode.OK))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetUsersInfo(List<Guid> ids)
+        {
+            try
+            {
+                return Ok(await _userService.GetUsersInfo(ids.Take(1000).ToList()));
+            }
+            catch (Exception e)
+            {
+                _logger.LogDebug(e.ToString());
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpGet("User/{id}/Groups")]
         [ProducesResponseType(typeof(List<Guid>), ((int)HttpStatusCode.OK))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
@@ -71,7 +87,7 @@ namespace User.Controllers
         }
 
         [HttpGet("Group/{id}")]
-        [ProducesResponseType(typeof(List<GroupInfo>), ((int)HttpStatusCode.OK))]
+        [ProducesResponseType(typeof(GroupInfo), ((int)HttpStatusCode.OK))]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetGroupInfo(Guid id)
         {
@@ -79,6 +95,22 @@ namespace User.Controllers
             {
                 var group = _userService.GetGroup(id);
                 return Ok(await group.GetInfo());
+            }
+            catch (Exception e)
+            {
+                _logger.LogDebug(e.ToString());
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost("Groups")]
+        [ProducesResponseType(typeof(List<GroupInfo>), ((int)HttpStatusCode.OK))]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetGroupsInfo(List<Guid> ids)
+        {
+            try
+            {
+                return Ok(await _userService.GetGroupsInfo(ids));
             }
             catch (Exception e)
             {
@@ -103,5 +135,6 @@ namespace User.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
+
     }
 }

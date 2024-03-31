@@ -2,6 +2,7 @@
 using ChatSender.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,7 +41,5 @@ namespace ChatSender.Core.Services
 
             return new Models.User(_userApi, authInfo.UserId);
         }
-
-
     }
 }

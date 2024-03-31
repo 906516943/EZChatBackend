@@ -92,14 +92,14 @@ namespace User.Persistence
             return group.Id;
         }
 
-        public async Task<GroupInfo> GetGroupInfo(Guid id)
+        public async Task<List<GroupInfo>> GetGroupInfo(List<Guid> ids)
         {
-            var res = await _context.Groups.FindAsync(id);
+            var res = await _context.Groups.Where(x => ids.Contains(x.Id)).ToListAsync();
 
-            if (res is null)
+            if(res.Count == 0)
                 throw new InvalidDataException("Group not found");
 
-            return new GroupInfo(res.Name);
+            return res.Select(x => new GroupInfo(x.Name)).ToList();
         }
 
         public async Task<List<Guid>> GetGroupUsers(Guid id)
@@ -126,14 +126,14 @@ namespace User.Persistence
             return res.Groups.Select(x => x.Id).ToList();
         }
 
-        public async Task<UserInfo> GetUserInfo(Guid id)
+        public async Task<List<UserInfo>> GetUserInfo(List<Guid> ids)
         {
-            var res = await _context.Users.FindAsync(id);
+            var res = await _context.Users.Where(x => ids.Contains(x.Id)).ToListAsync();
 
-            if (res is null)
+            if(res.Count == 0)
                 throw new InvalidDataException("User not found");
 
-            return new UserInfo(res.Name);
+            return res.Select(x => new UserInfo(x.Name)).ToList();
         }
 
         public async Task RemoveGroupUser(Guid groupId, Guid userId)
