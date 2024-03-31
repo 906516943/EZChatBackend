@@ -60,7 +60,7 @@ namespace User.Controllers
         {
             try
             {
-                return Ok(await _userService.GetUsersInfo(ids.Take(1000).ToList()));
+                return Ok(await _userService.GetUsersInfo(ids.Take(5000).ToList()));
             }
             catch (Exception e)
             {
@@ -110,7 +110,7 @@ namespace User.Controllers
         {
             try
             {
-                return Ok(await _userService.GetGroupsInfo(ids));
+                return Ok(await _userService.GetGroupsInfo(ids.Take(5000).ToList()));
             }
             catch (Exception e)
             {
