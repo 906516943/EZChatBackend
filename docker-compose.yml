@@ -68,6 +68,22 @@ services:
       - source: api-servers
         target: /apiServers.json
 
+  image:
+    container_name: image
+    image: ${DOCKER_REGISTRY-}image
+    build:
+      context: .
+      dockerfile: ImageService/Dockerfile
+    networks:
+        - backend
+    ports:
+        - '10243:25568' 
+    environment:
+        - 'ASPNETCORE_HTTP_PORTS=25568'
+        - 'ASPNETCORE_ENVIRONMENT=Development'
+    volumes:
+        - db-image-data:/db-images
+    
   db_adminer:
     container_name: db-adminer
     image: adminer
@@ -96,5 +112,6 @@ configs:
 
 volumes:
   db-user-data:
+  db-image-data:
 
 
