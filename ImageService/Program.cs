@@ -1,3 +1,4 @@
+using ImageService.Core.Models;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,11 @@ builder.Services.AddCors(p =>
     p.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
+builder.Services.Configure<ImageConfig>(options =>
+{
+    options.ThumbnailJpgQuality = 75;
+    options.ThumbnailMaxSize = 512;
+});
 
 builder.WebHost.UseUrls("http://*:" + Environment.GetEnvironmentVariable("ASPNETCORE_HTTP_PORTS"));
 builder.WebHost.ConfigureKestrel(serverOptions =>
