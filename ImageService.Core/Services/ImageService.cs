@@ -1,6 +1,8 @@
 ﻿using ImageService.Core.Core;
 using ImageService.Core.Models;
+using ImageService.Core.Repos;
 using IronSoftware.Drawing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
 using System;
@@ -24,21 +26,39 @@ namespace ImageService.Core.Services
     {
         private ImageServiceCore _core = new();
         private ImageConfig _config;
+        private IImageRepo _imgRedisRepo;
+        private IImageRepo _imgDbRepo;
+        private List<IImageRepo> _imgRepos;
 
-        public ImageService(IOptions<ImageConfig> config) 
+        public ImageService(IOptions<ImageConfig> config, [FromKeyedServices("db")] IImageRepo dbRepo, [FromKeyedServices("redis")] IImageRepo redisRepo) 
         { 
             _config = config.Value;
+            _imgRedisRepo = redisRepo;
+            _imgDbRepo = dbRepo;
+
+            _imgRepos = new List<IImageRepo>() {_imgRedisRepo, _imgDbRepo };
         }
 
-        public Task<Image> FindImgFromMd5(string md5)
+        public async Task<Image> FindImgFromMd5(string md5)
         {
-            throw new NotImplementedException();
+            var res = await _imgRepos.AnyMethodAsync(x => x.FindImageIdFromMd5, (Func<string, Task<string>> x) => x(md5));
+
+            if (res.Item == null)
+                throw new InvalidOperationException("Image id not found");
+
+            //cache to redis
+            if (res.From == 1)
+                await _imgRedisRepo.InsertImageIdFromMd5(md5, res.Item!);
+
+            return new Image(_config, res.Item, _imgRepos);
         }
+
 
         public async Task<Image> MakeImg(byte[] img)
         {
-            return new Image(_config, false, img);
+            return new Image(_config, false, img, _imgRepos);
         }
+
 
         public Task<Image> MakeThumbnailImg(byte[] img)
         {
@@ -61,7 +81,7 @@ namespace ImageService.Core.Services
 
                 ret = bitmap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);
 
-                return new Image(_config, true, ret);
+                return new Image(_config, true, ret, _imgRepos);
             });
         }
 

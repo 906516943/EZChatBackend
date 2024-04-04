@@ -82,8 +82,23 @@ services:
         - 'ASPNETCORE_HTTP_PORTS=25568'
         - 'ASPNETCORE_ENVIRONMENT=Development'
     volumes:
-        - db-image-data:/db-images
-    
+        - image-data:/db-images
+   
+  image_db:
+    container_name: image-db
+    image: mysql
+    restart: always
+    environment:
+      - 'MYSQL_ROOT_PASSWORD=password'
+      - 'MYSQL_TCP_PORT=6382'
+    expose:
+      - '6382'
+    networks:
+        - backend
+    volumes:
+        - db-image-data:/var/lib/mysql
+  
+
   db_adminer:
     container_name: db-adminer
     image: adminer
@@ -112,6 +127,7 @@ configs:
 
 volumes:
   db-user-data:
+  image-data:
   db-image-data:
 
 

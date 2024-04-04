@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "User.Core", "User.Core\User
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSender.Core", "ChatSender.Core\ChatSender.Core.csproj", "{FE65B331-24A7-4FDC-9993-3C2F78A561C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService", "ImageService\ImageService.csproj", "{93A26C54-9EF1-4AEC-8D1A-5B3B2E79CEFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageService", "ImageService\ImageService.csproj", "{93A26C54-9EF1-4AEC-8D1A-5B3B2E79CEFC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService.Core", "ImageService.Core\ImageService.Core.csproj", "{0C23C702-85EB-4FCB-8222-784C4E961864}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageService.Core", "ImageService.Core\ImageService.Core.csproj", "{0C23C702-85EB-4FCB-8222-784C4E961864}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService.Persistence", "..\ImageService.Persistence\ImageService.Persistence.csproj", "{BA10715A-B1F0-4BBC-9C8F-BB31D2E3988A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{0C23C702-85EB-4FCB-8222-784C4E961864}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C23C702-85EB-4FCB-8222-784C4E961864}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C23C702-85EB-4FCB-8222-784C4E961864}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA10715A-B1F0-4BBC-9C8F-BB31D2E3988A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA10715A-B1F0-4BBC-9C8F-BB31D2E3988A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA10715A-B1F0-4BBC-9C8F-BB31D2E3988A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA10715A-B1F0-4BBC-9C8F-BB31D2E3988A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
