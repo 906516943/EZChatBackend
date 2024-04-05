@@ -29,14 +29,20 @@ namespace ImageService.Core.Services
         private IImageRepo _imgRedisRepo;
         private IImageRepo _imgDbRepo;
         private List<IImageRepo> _imgRepos;
+        private List<IImageStorageRepo> _imgStorageRepos;
 
-        public ImageService(IOptions<ImageConfig> config, [FromKeyedServices("db")] IImageRepo dbRepo, [FromKeyedServices("redis")] IImageRepo redisRepo) 
+        public ImageService(IOptions<ImageConfig> config, 
+            [FromKeyedServices("db")] IImageRepo dbRepo, 
+            [FromKeyedServices("redis")] IImageRepo redisRepo, 
+            [FromKeyedServices("disk")] IImageStorageRepo diskStorage,
+            [FromKeyedServices("redis")] IImageStorageRepo redisStorage) 
         { 
             _config = config.Value;
             _imgRedisRepo = redisRepo;
             _imgDbRepo = dbRepo;
 
             _imgRepos = new List<IImageRepo>() {_imgRedisRepo, _imgDbRepo };
+            _imgStorageRepos = new List<IImageStorageRepo>() { redisStorage, diskStorage };
         }
 
         public async Task<Image> FindImgFromMd5(string md5)
@@ -50,13 +56,13 @@ namespace ImageService.Core.Services
             if (res.From == 1)
                 await _imgRedisRepo.InsertImageIdFromMd5(md5, res.Item!);
 
-            return new Image(_config, res.Item, _imgRepos);
+            return new Image(_config, res.Item, _imgRepos, _imgStorageRepos);
         }
 
 
         public async Task<Image> MakeImg(byte[] img)
         {
-            return new Image(_config, false, img, _imgRepos);
+            return new Image(_config, false, img, _imgRepos, _imgStorageRepos);
         }
 
 
@@ -81,7 +87,7 @@ namespace ImageService.Core.Services
 
                 ret = bitmap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);
 
-                return new Image(_config, true, ret, _imgRepos);
+                return new Image(_config, true, ret, _imgRepos, _imgStorageRepos);
             });
         }
 

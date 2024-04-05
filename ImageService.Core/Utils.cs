@@ -21,12 +21,29 @@ namespace ImageService.Core
                     ret = await operation(selector(s));
                     return (count, ret);
                 }
-                catch (InvalidOperationException e) { }
+                catch { }
 
                 count++;
             }
 
             return (-1, default(O));
+        }
+
+        public static async Task<bool> AllMethodsAsync<I, F>(this IEnumerable<I> src, Func<I, F> selector, Func<F, Task> operation) 
+        {
+            foreach (var s in src)
+            {
+                try
+                {
+                    await operation(selector(s));
+                }
+                catch 
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

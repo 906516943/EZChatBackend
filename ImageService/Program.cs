@@ -33,6 +33,7 @@ builder.Services.Configure<ImageConfig>(options =>
 {
     options.ThumbnailJpgQuality = 100;
     options.ThumbnailMaxSize = 512;
+    options.BaseDirectory = "/db-images/";
 });
 
 builder.Services.Configure<RedisConfig>(options =>
