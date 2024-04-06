@@ -82,7 +82,7 @@ services:
         - 'ASPNETCORE_HTTP_PORTS=25568'
         - 'ASPNETCORE_ENVIRONMENT=Development'
     volumes:
-        - image-data:/db-images
+        - image-data:/var/lib/db-images
    
   image_db:
     container_name: image-db

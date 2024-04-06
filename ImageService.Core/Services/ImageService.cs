@@ -17,9 +17,15 @@ namespace ImageService.Core.Services
     {
         Task<Image> MakeThumbnailImg(byte[] img);
 
+        Task<Image> MakeThumbnailImg(string id);
+
         Task<Image> MakeImg(byte[] img);
 
-        Task<Image> FindImgFromMd5(string md5);
+        Task<Image> MakeImg(string id);
+
+        Task<Image?> FindImgFromMd5(string md5);
+
+        Task PutImage(Image img, Image thumbnailImg);
     }
 
     public class ImageService : IImageService
@@ -45,19 +51,26 @@ namespace ImageService.Core.Services
             _imgStorageRepos = new List<IImageStorageRepo>() { redisStorage, diskStorage };
         }
 
-        public async Task<Image> FindImgFromMd5(string md5)
+        public async Task<Image?> FindImgFromMd5(string md5)
         {
-            var res = await _imgRepos.AnyMethodAsync(x => x.FindImageIdFromMd5, (Func<string, Task<string>> x) => x(md5));
+            try
+            {
+                //find image id & img type
+                var imgId = await _imgRepos.AnyMethodAsync(x => x.FindImageIdFromMd5, (Func<string, Task<string>> x) => x(md5));
+                var imgType = await _imgRepos.AnyMethodAsync(x => x.IsThumbnailImg, (Func<string, Task<bool>> x) => x(imgId.Item));
 
-            if (res.Item == null)
-                throw new InvalidOperationException("Image id not found");
+                //cache to redis
+                if (imgId.From == 1)
+                    await _imgRedisRepo.InsertImageIdFromMd5(md5, imgId.Item!, imgType.Item);
 
-            //cache to redis
-            if (res.From == 1)
-                await _imgRedisRepo.InsertImageIdFromMd5(md5, res.Item!);
+                return new Image(_config, imgType.Item, imgId.Item, _imgRepos, _imgStorageRepos);
+            }
+            catch { }
 
-            return new Image(_config, res.Item, _imgRepos, _imgStorageRepos);
+            return null;
         }
+
+
 
 
         public async Task<Image> MakeImg(byte[] img)
@@ -65,6 +78,10 @@ namespace ImageService.Core.Services
             return new Image(_config, false, img, _imgRepos, _imgStorageRepos);
         }
 
+        public async Task<Image> MakeImg(string id)
+        {
+            return new Image(_config, false, id, _imgRepos, _imgStorageRepos);
+        }
 
         public Task<Image> MakeThumbnailImg(byte[] img)
         {
@@ -82,15 +99,37 @@ namespace ImageService.Core.Services
                     var resizedBitMap = AnyBitmap.LoadAnyBitmapFromRGBBuffer(res.Buffer, res.Width, res.Height)
                         .RotateFlip(AnyBitmap.RotateMode.Rotate180, AnyBitmap.FlipMode.None);
 
-                    ret = resizedBitMap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);   
+                    ret = resizedBitMap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);
                 }
-
-                ret = bitmap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);
+                else 
+                {
+                    ret = bitmap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);
+                }
 
                 return new Image(_config, true, ret, _imgRepos, _imgStorageRepos);
             });
         }
 
+        public async Task<Image> MakeThumbnailImg(string id)
+        {
+            return new Image(_config, true, id, _imgRepos, _imgStorageRepos);
+        }
 
+        public async Task PutImage(Image img, Image thumbnailImg)
+        {
+            //if img already exists
+            var imgMd5 = await img.GetMd5();
+            if ((await FindImgFromMd5(imgMd5)) is not null)
+                return;
+
+
+            //save thumbnail & img
+            await img.Save();
+            await thumbnailImg.Save();
+
+
+            //link thumbnail to img
+            await _imgRepos.AllMethodsAsync(x => x.LinkImgAndThumbnailImg, (Func<string, string, Task> x) => x(img.Id, thumbnailImg.Id));
+        }
     }
 }

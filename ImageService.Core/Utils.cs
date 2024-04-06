@@ -8,25 +8,23 @@ namespace ImageService.Core
 {
     public static class Utils
     {
-        public static async Task<(int From, O? Item)> AnyMethodAsync<I, F, O>(this IEnumerable<I> src, Func<I, F> selector, Func<F, Task<O>> operation) 
+        public static async Task<(int From, O Item)> AnyMethodAsync<I, F, O>(this IEnumerable<I> src, Func<I, F> selector, Func<F, Task<O>> operation) 
         {
             int count = 0;
-            O? ret = default(O);
-
 
             foreach (var s in src) 
             {
                 try
                 {
-                    ret = await operation(selector(s));
+                    var ret = await operation(selector(s));
                     return (count, ret);
                 }
-                catch { }
+                catch (Exception e) { }
 
                 count++;
             }
 
-            return (-1, default(O));
+            throw new InvalidOperationException("Provided methods didn't return any data");
         }
 
         public static async Task<bool> AllMethodsAsync<I, F>(this IEnumerable<I> src, Func<I, F> selector, Func<F, Task> operation) 
@@ -37,7 +35,7 @@ namespace ImageService.Core
                 {
                     await operation(selector(s));
                 }
-                catch 
+                catch(Exception e)
                 {
                     return false;
                 }

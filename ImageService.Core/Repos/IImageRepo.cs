@@ -4,6 +4,7 @@ using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,9 +14,13 @@ namespace ImageService.Core.Repos
     {
         Task<string> FindImageIdFromMd5(string md5);
 
-        Task InsertImageIdFromMd5(string md5, string id);
+        Task<bool> IsThumbnailImg(string imgId);
 
-        Task DeleteImageIdFromMd5(string md5);
+        Task InsertImageIdFromMd5(string md5, string id, bool isThumnail);
+
+        Task LinkImgAndThumbnailImg(string imgId, string thumnailImgId);
+
+        Task<string> GetThumbnailImgId(string imgId);
     }
 
     public class ImageRepoRedis : IImageRepo
@@ -29,26 +34,51 @@ namespace ImageService.Core.Repos
             _config = config.Value;
         }
 
-        public async Task DeleteImageIdFromMd5(string md5)
-        {
-            await _redis.StringGetDeleteAsync("image:id_lookup:" + md5);
-        }
-
         public async Task<string> FindImageIdFromMd5(string md5)
         {
-            var res = (string?)(await _redis.StringGetAsync("image:id_lookup:" + md5));
+            var res = (string?)(await _redis.StringGetAsync("image:md5_id_lookup:" + md5));
 
             if (res is null)
                 throw new InvalidOperationException("image id not found");
 
             //renew TTL
-            await _redis.KeyExpireAsync("image:id_lookup:" + md5, _config.TTL, CommandFlags.FireAndForget);
+            await _redis.KeyExpireAsync("image:md5_id_lookup:" + md5, _config.TTL, CommandFlags.FireAndForget);
             return res;
         }
 
-        public async Task InsertImageIdFromMd5(string md5, string id)
+        public async Task<string> GetThumbnailImgId(string imgId)
         {
-            await _redis.StringSetAsync("image:id_lookup:" + md5, id, _config.TTL);
+            var res = (string?)(await _redis.StringGetAsync("image:img_thumbnail_id:" + imgId));
+
+            if (res is null)
+                throw new InvalidOperationException("thumbnail Id not found");
+
+            //renew TTL
+            await _redis.KeyExpireAsync("image:img_thumbnail_id:" + imgId, _config.TTL, CommandFlags.FireAndForget);
+            return res;
+        }
+
+        public async Task InsertImageIdFromMd5(string md5, string id, bool isThumnail)
+        {
+            await _redis.StringSetAsync("image:md5_id_lookup:" + md5, id, _config.TTL);
+            await _redis.StringSetAsync("image:img_type:" + id, isThumnail, _config.TTL);
+        }
+
+        public async Task<bool> IsThumbnailImg(string imgId)
+        {
+            var res = (bool?)(await _redis.StringGetAsync("image:img_type:" + imgId));
+
+            if (res is null)
+                throw new InvalidOperationException("image Id not found");
+
+            //renew TTL
+            await _redis.KeyExpireAsync("image:img_type:" + imgId, _config.TTL, CommandFlags.FireAndForget);
+            return res!.Value;
+        }
+
+        public async Task LinkImgAndThumbnailImg(string imgId, string thumnailImgId)
+        {
+            await _redis.StringSetAsync("image:img_thumbnail_id:" + imgId, thumnailImgId, _config.TTL);
         }
     }
 }

@@ -31,9 +31,9 @@ builder.Services.AddCors(p =>
 
 builder.Services.Configure<ImageConfig>(options =>
 {
-    options.ThumbnailJpgQuality = 100;
-    options.ThumbnailMaxSize = 512;
-    options.BaseDirectory = "/db-images/";
+    options.ThumbnailJpgQuality = 25;
+    options.ThumbnailMaxSize = 256;
+    options.BaseDirectory = "/var/lib/db-images/";
 });
 
 builder.Services.Configure<RedisConfig>(options =>

@@ -1,4 +1,5 @@
-﻿using IronSoftware.Drawing;
+﻿using ImageService.Core.Models;
+using IronSoftware.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;

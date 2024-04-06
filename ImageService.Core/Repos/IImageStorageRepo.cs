@@ -25,20 +25,14 @@ namespace ImageService.Core.Repos
             _config = config!.Value;
         }
 
-        public Task<byte[]> GetImage(string id)
+        public async Task<byte[]> GetImage(string id)
         {
-            return Task.Run(() =>
-            {
-                var path = MakePath(id);
+            var path = MakePath(id);
+            using var fileStream = File.Open(path.Dir + path.File, FileMode.Open);
+            using var ms = new MemoryStream();
 
-                using (var fileStream = File.Open(path.Dir + path.File, FileMode.Open))
-                {
-                    using (var binaryReader = new BinaryReader(fileStream))
-                    {
-                        return binaryReader.ReadBytes(int.MaxValue);
-                    }
-                }
-            });
+            await fileStream.CopyToAsync(ms);
+            return ms.ToArray();
         }
 
         public Task SetImage(string id, byte[] img)
@@ -60,8 +54,8 @@ namespace ImageService.Core.Repos
 
         private (string Dir, string File) MakePath(string id) 
         {
-            var path = $"{_config.BaseDirectory}{id.Substring(0, 4)}/{id.Substring(4, 8)}/{id.Substring(8, 12)}/{id.Substring(12, 16)}/{id.Substring(16, 20)}/{id.Substring(20, 24)}/{id.Substring(24, 28)}/";
-            var file = $"{id.Substring(28)}";
+            var path = $"{_config.BaseDirectory}{id.Substring(0, 4)}/{id.Substring(4, 4)}/{id.Substring(8, 4)}/{id.Substring(12, 4)}/{id.Substring(16, 4)}/";
+            var file = $"{id.Substring(20)}";
 
             return (path, file);
         }
