@@ -16,6 +16,7 @@ builder.Services.Configure<ApiServers>(builder.Configuration.GetSection("apiServ
 //services
 builder.Services.AddScoped<IUserApi, UserApi>();
 builder.Services.AddScoped<IAuthApi, AuthApi>();
+builder.Services.AddScoped<IImageApi, ImageApi>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddSingleton<GlobalService>();
 
@@ -32,6 +33,10 @@ builder.Services.AddHttpClient<IAuthApi, AuthApi>(x =>
     x.BaseAddress = new Uri(configuration.GetSection("apiServers").GetValue<string>("AuthApi")!);
 });
 
+builder.Services.AddHttpClient<IImageApi, ImageApi>(x =>
+{
+    x.BaseAddress = new Uri(configuration.GetSection("apiServers").GetValue<string>("ImageApi")!);
+});
 
 
 var app = builder.Build();

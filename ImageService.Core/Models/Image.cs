@@ -89,8 +89,6 @@ namespace ImageService.Core.Models
 
             //save binary data to redis and disk
             res = await _storageRepos.AllMethodsAsync(x => x.SetImage, (Func<string, byte[], Task> x) => x(_id, data));
-
-            int j = 10;
         }
 
         private async Task<byte[]> Get() 

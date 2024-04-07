@@ -36,7 +36,12 @@ namespace ChatSender.Core.Models
         /// <summary>
         /// Images
         /// </summary>
-        public List<Guid>? Images { get; set; }
+        public List<ImageInfo>? ImagesById { get; set; }
+
+        /// <summary>
+        /// Images
+        /// </summary>
+        public List<string>? ImagesByMd5 { get; set; }
 
     }
 }

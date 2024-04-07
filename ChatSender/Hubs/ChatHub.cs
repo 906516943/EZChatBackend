@@ -1,5 +1,4 @@
-﻿using ChatSender.Core.Core;
-using ChatSender.Core.Externals;
+﻿using ChatSender.Core.Externals;
 using ChatSender.Core.Models;
 using ChatSender.Core.Services;
 using Microsoft.AspNetCore.SignalR;
@@ -14,7 +13,6 @@ namespace ChatSender.Hubs
         private readonly IChatService _chatService;
 
         private ILogger<ChatHub> _logger;
-        private ChatCore _core = new();
 
         public ChatHub(GlobalService globalService, IChatService chatService, ILogger<ChatHub> logger) 
         {
@@ -32,7 +30,7 @@ namespace ChatSender.Hubs
 
 
                 //validate message and make return message
-                var retMessage = await _core.MakeReturnMessage(msg, user, lastSentTime);
+                var retMessage = await _chatService.MakeReturnMessage(msg, user, lastSentTime);
                 _globalService.UpdateUserLastSentTime(Context.ConnectionId);
 
 

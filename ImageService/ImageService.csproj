@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ImageService.Persistence\ImageService.Persistence.csproj" />
     <ProjectReference Include="..\ImageService.Core\ImageService.Core.csproj" />
+    <ProjectReference Include="..\ImageService.Persistence\ImageService.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

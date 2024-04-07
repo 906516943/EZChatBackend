@@ -12,6 +12,8 @@ namespace User.Core.Models
 
         public string AuthApi { get; set; } = "";
 
+        public string ImageApi { get; set; } = "";
+
         public string ChatSenderApi { get; set; } = "";
     }
 }

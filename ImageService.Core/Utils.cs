@@ -19,7 +19,7 @@ namespace ImageService.Core
                     var ret = await operation(selector(s));
                     return (count, ret);
                 }
-                catch (Exception e) { }
+                catch { }
 
                 count++;
             }
@@ -35,7 +35,7 @@ namespace ImageService.Core
                 {
                     await operation(selector(s));
                 }
-                catch(Exception e)
+                catch
                 {
                     return false;
                 }
