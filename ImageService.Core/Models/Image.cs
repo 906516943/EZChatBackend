@@ -1,5 +1,6 @@
 ﻿using ImageService.Core.Core;
 using ImageService.Core.Repos;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Formats.Asn1;
@@ -17,7 +18,7 @@ namespace ImageService.Core.Models
         private ImageConfig _config;
         private List<IImageRepo> _idRepos;
         private List<IImageStorageRepo> _storageRepos;
-        private string? _md5;
+        private string? _hash;
         private string _id;
 
 
@@ -57,17 +58,17 @@ namespace ImageService.Core.Models
             return new Image(_config, true, res.Item, _idRepos, _storageRepos);
         }
 
-        public async Task<string> GetMd5() 
+        public async Task<string> GetHash() 
         {
-            if (_md5 is not null)
-                return _md5;
+            if (_hash is not null)
+                return _hash;
 
 
-            //gen new Md5
+            //gen new hash
             var byteData = await Get();
-            _md5 = await GenMd5(byteData) + "-" + byteData.Length;
+            _hash = await GenHash(byteData) + "-" + byteData.Length;
 
-            return _md5;    
+            return _hash;    
         }
 
         public async Task<byte[]> GetBytes() 
@@ -77,12 +78,12 @@ namespace ImageService.Core.Models
 
         public async Task Save() 
         {
-            var md5 = await GetMd5();
+            var hash = await GetHash();
             var data = await GetBytes();
 
 
-            //write md5 to redis and database
-            var res = await _idRepos.AllMethodsAsync(x => x.InsertImageIdFromMd5, (Func<string, string, bool, Task> x) => x(md5, _id, _isThumbnail));
+            //write hash to redis and database
+            var res = await _idRepos.AllMethodsAsync(x => x.InsertImageIdFromHash, (Func<string, string, bool, Task> x) => x(hash, _id, _isThumbnail));
             if (!res)
                 throw new InvalidOperationException("Save id faild");
 
@@ -110,14 +111,14 @@ namespace ImageService.Core.Models
             return res.Item;
         }
 
-        private Task<string> GenMd5(byte[] data) 
+        private Task<string> GenHash(byte[] data) 
         {
             return Task.Run(() =>
             {
-                using (var md5 = MD5.Create()) 
+                using (var sha = SHA256.Create()) 
                 {
-                    var hash = md5.ComputeHash(data);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    var hash = sha.ComputeHash(data);
+                    return Base64UrlEncoder.Encode(hash);
                 }
             });
         }

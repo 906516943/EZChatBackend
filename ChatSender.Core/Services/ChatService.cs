@@ -70,12 +70,12 @@ namespace ChatSender.Core.Services
 
             //make sure imgs are valid
             List<ImageInfo>? images = null;
-            if (message.ImagesByMd5 is not null) 
+            if (message.ImagesByHash is not null) 
             {
-                if (message.ImagesByMd5.Count > 10)
+                if (message.ImagesByHash.Count > 10)
                     throw new InvalidDataException("Number of images exceeds the limit");
 
-                var tasks = message.ImagesByMd5.Select(x => _imageApi.GetImageIdFromMd5(x)).ToList();
+                var tasks = message.ImagesByHash.Select(x => _imageApi.GetImageIdFromHash(x)).ToList();
                 images = (await Task.WhenAll(tasks)).ToList();
             }
 

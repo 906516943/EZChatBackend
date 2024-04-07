@@ -1,4 +1,6 @@
-﻿namespace Auth.Core
+﻿using Microsoft.IdentityModel.Tokens;
+
+namespace Auth.Core
 {
     public static class Utils
     {
@@ -9,7 +11,7 @@
             var random = new Random();
             random.NextBytes(bytes);
 
-            return Convert.ToBase64String(guid.ToByteArray().Concat(bytes).ToArray()).Replace("+","").Replace("/", "").Replace("=", "");
+            return Base64UrlEncoder.Encode(guid.ToByteArray().Concat(bytes).ToArray());
         }
     }
 }

@@ -14,12 +14,12 @@ namespace ImageService.Persistence
             _context = context;
         }
 
-        public async Task<string> FindImageIdFromMd5(string md5)
+        public async Task<string> FindImageIdFromHash(string hash)
         {
-            var rec = await _context.ImageIdLookups.FindAsync(md5);
+            var rec = await _context.ImageIdLookups.FindAsync(hash);
 
             if(rec is null)
-                throw new InvalidOperationException($"{md5} not found");
+                throw new InvalidOperationException($"{hash} not found");
 
             return rec.Id;
         }
@@ -34,9 +34,9 @@ namespace ImageService.Persistence
             return rec.ThumImgId;
         }
 
-        public async Task InsertImageIdFromMd5(string md5, string id, bool isThumnail)
+        public async Task InsertImageIdFromHash(string hash, string id, bool isThumnail)
         {
-            _context.ImageIdLookups.Add(new ImageIdLookup() { Id = id, Md5 = md5, IsThumnail = isThumnail });
+            _context.ImageIdLookups.Add(new ImageIdLookup() { Id = id, Hash = hash, IsThumnail = isThumnail });
             await _context.Ctx.SaveChangesAsync();
         }
 

@@ -22,11 +22,11 @@ namespace ImageService.Controllers
         [ProducesResponseType(typeof(ImageInfo), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> FindImage(string md5)
+        public async Task<IActionResult> FindImage(string hash)
         {
             try
             {
-                var img = await _imageService.FindImgFromMd5(md5);
+                var img = await _imageService.FindImgFromHash(hash);
 
                 if(img is null)
                     return NotFound();
@@ -38,6 +38,40 @@ namespace ImageService.Controllers
                 return Ok(new ImageInfo(imgId, thumbnailId));
             }
             catch (Exception e)
+            {
+                _logger.LogDebug(e.ToString());
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+
+        [HttpPost("FindImage")]
+        [ProducesResponseType(typeof(List<ImageInfo>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> FindImage([FromBody]List<string> hashes)
+        {
+            try
+            {
+                if (hashes.Count > 100)
+                    throw new InvalidDataException("Single request cannot have more than 100 hashes");
+
+                var imgs = await _imageService.FindImgFromHash(hashes);
+                if (imgs is null) return NotFound();
+
+
+                var ret = new List<ImageInfo>();
+                foreach ( var img in imgs) 
+                {
+                    var imgId = img.Id;
+                    var thumbnailId = img.IsThumbnail ? null : (await img.GetThumbnail()).Id;
+
+                    ret.Add(new ImageInfo(imgId, thumbnailId));
+                }
+
+                return Ok(ret);
+            }
+            catch (Exception e) 
             {
                 _logger.LogDebug(e.ToString());
                 return StatusCode((int)HttpStatusCode.InternalServerError);

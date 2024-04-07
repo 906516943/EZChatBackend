@@ -15,7 +15,7 @@ namespace ImageService.Persistence.Contexts.Models
     {
         [Key]
         [Required]
-        public string Md5 { get; set; } = "";
+        public string Hash { get; set; } = "";
 
         [Required]
         public string Id { get; set; } = "";

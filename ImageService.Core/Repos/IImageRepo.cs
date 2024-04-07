@@ -12,11 +12,11 @@ namespace ImageService.Core.Repos
 {
     public interface IImageRepo
     {
-        Task<string> FindImageIdFromMd5(string md5);
+        Task<string> FindImageIdFromHash(string hash);
 
         Task<bool> IsThumbnailImg(string imgId);
 
-        Task InsertImageIdFromMd5(string md5, string id, bool isThumnail);
+        Task InsertImageIdFromHash(string hash, string id, bool isThumnail);
 
         Task LinkImgAndThumbnailImg(string imgId, string thumnailImgId);
 
@@ -34,15 +34,15 @@ namespace ImageService.Core.Repos
             _config = config.Value;
         }
 
-        public async Task<string> FindImageIdFromMd5(string md5)
+        public async Task<string> FindImageIdFromHash(string hash)
         {
-            var res = (string?)(await _redis.StringGetAsync("image:md5_id_lookup:" + md5));
+            var res = (string?)(await _redis.StringGetAsync("image:hash_id_lookup:" + hash));
 
             if (res is null)
                 throw new InvalidOperationException("image id not found");
 
             //renew TTL
-            await _redis.KeyExpireAsync("image:md5_id_lookup:" + md5, _config.TTL, CommandFlags.FireAndForget);
+            await _redis.KeyExpireAsync("image:hash_id_lookup:" + hash, _config.TTL, CommandFlags.FireAndForget);
             return res;
         }
 
@@ -58,9 +58,9 @@ namespace ImageService.Core.Repos
             return res;
         }
 
-        public async Task InsertImageIdFromMd5(string md5, string id, bool isThumnail)
+        public async Task InsertImageIdFromHash(string hash, string id, bool isThumnail)
         {
-            await _redis.StringSetAsync("image:md5_id_lookup:" + md5, id, _config.TTL);
+            await _redis.StringSetAsync("image:hash_id_lookup:" + hash, id, _config.TTL);
             await _redis.StringSetAsync("image:img_type:" + id, isThumnail, _config.TTL);
         }
 

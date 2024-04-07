@@ -9,7 +9,7 @@ namespace ChatSender.Core.Externals
 {
     public interface IImageApi 
     {
-        public Task<ImageInfo> GetImageIdFromMd5(string md5);
+        public Task<ImageInfo> GetImageIdFromHash(string hash);
     }
 
     public class ImageApi : IImageApi
@@ -21,9 +21,9 @@ namespace ChatSender.Core.Externals
             _httpClient = httpClient;
         }
 
-        public async Task<ImageInfo> GetImageIdFromMd5(string md5)
+        public async Task<ImageInfo> GetImageIdFromHash(string hash)
         {
-            return await _httpClient.DoGet<ImageInfo>($"/ImageApi/FindImage?md5={md5}");
+            return await _httpClient.DoGet<ImageInfo>($"/ImageApi/FindImage?hash={hash}");
         }
     }
 }

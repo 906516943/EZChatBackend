@@ -23,7 +23,9 @@ namespace ImageService.Core.Services
 
         Task<Image> MakeImg(string id);
 
-        Task<Image?> FindImgFromMd5(string md5);
+        Task<Image?> FindImgFromHash(string hash);
+
+        Task<List<Image>?> FindImgFromHash(List<string> hashes);
 
         Task PutImage(Image img, Image thumbnailImg);
     }
@@ -51,17 +53,17 @@ namespace ImageService.Core.Services
             _imgStorageRepos = new List<IImageStorageRepo>() { redisStorage, diskStorage };
         }
 
-        public async Task<Image?> FindImgFromMd5(string md5)
+        public async Task<Image?> FindImgFromHash(string hash)
         {
             try
             {
                 //find image id & img type
-                var imgId = await _imgRepos.AnyMethodAsync(x => x.FindImageIdFromMd5, (Func<string, Task<string>> x) => x(md5));
+                var imgId = await _imgRepos.AnyMethodAsync(x => x.FindImageIdFromHash, (Func<string, Task<string>> x) => x(hash));
                 var imgType = await _imgRepos.AnyMethodAsync(x => x.IsThumbnailImg, (Func<string, Task<bool>> x) => x(imgId.Item));
 
                 //cache to redis
                 if (imgId.From == 1)
-                    await _imgRedisRepo.InsertImageIdFromMd5(md5, imgId.Item!, imgType.Item);
+                    await _imgRedisRepo.InsertImageIdFromHash(hash, imgId.Item, imgType.Item);
 
                 return new Image(_config, imgType.Item, imgId.Item, _imgRepos, _imgStorageRepos);
             }
@@ -70,8 +72,27 @@ namespace ImageService.Core.Services
             return null;
         }
 
+        public async Task<List<Image>?> FindImgFromHash(List<string> hashes)
+        {
+            try
+            {
+                var ret = new List<Image>();
 
+                foreach (var hash in hashes) 
+                {
+                    var item = await FindImgFromHash(hash);
 
+                    if (item is null)
+                        throw new InvalidDataException("Image hash not found");
+
+                    ret.Add(item);
+                }
+
+                return ret;
+            }
+            catch { }
+            return null;
+        }
 
         public async Task<Image> MakeImg(byte[] img)
         {
@@ -118,8 +139,8 @@ namespace ImageService.Core.Services
         public async Task PutImage(Image img, Image thumbnailImg)
         {
             //if img already exists
-            var imgMd5 = await img.GetMd5();
-            if ((await FindImgFromMd5(imgMd5)) is not null)
+            var imgHash = await img.GetHash();
+            if ((await FindImgFromHash(imgHash)) is not null)
                 return;
 
 
