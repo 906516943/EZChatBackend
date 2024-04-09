@@ -35,7 +35,7 @@ namespace ImageService.Controllers
                 var imgId = img.Id;
                 var thumbnailId = img.IsThumbnail ? null : (await img.GetThumbnail()).Id;
 
-                return Ok(new ImageInfo(imgId, thumbnailId));
+                return Ok(new ImageInfo(hash, imgId, thumbnailId));
             }
             catch (Exception e)
             {
@@ -46,9 +46,8 @@ namespace ImageService.Controllers
 
 
         [HttpPost("FindImage")]
-        [ProducesResponseType(typeof(List<ImageInfo>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ImageInfo?>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> FindImage([FromBody]List<string> hashes)
         {
             try
@@ -57,16 +56,20 @@ namespace ImageService.Controllers
                     throw new InvalidDataException("Single request cannot have more than 100 hashes");
 
                 var imgs = await _imageService.FindImgFromHash(hashes);
-                if (imgs is null) return NotFound();
-
-
                 var ret = new List<ImageInfo>();
-                foreach ( var img in imgs) 
+
+                for (int i = 0; i < hashes.Count; i++) 
                 {
+                    var img = imgs[i];
+
+                    if (img is null)
+                        continue;
+
+
                     var imgId = img.Id;
                     var thumbnailId = img.IsThumbnail ? null : (await img.GetThumbnail()).Id;
 
-                    ret.Add(new ImageInfo(imgId, thumbnailId));
+                    ret.Add(new ImageInfo(hashes[i], imgId, thumbnailId));
                 }
 
                 return Ok(ret);

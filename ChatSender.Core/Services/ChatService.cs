@@ -58,7 +58,7 @@ namespace ChatSender.Core.Services
 
 
             //limit text to 2000 chars
-            if (string.IsNullOrEmpty(message.Text) || message.Text.Length > 2000)
+            if ((message.Text ?? "").Length > 2000)
                 throw new InvalidDataException("Text is either too long or empty");
 
 
@@ -75,8 +75,11 @@ namespace ChatSender.Core.Services
                 if (message.ImagesByHash.Count > 10)
                     throw new InvalidDataException("Number of images exceeds the limit");
 
-                var tasks = message.ImagesByHash.Select(x => _imageApi.GetImageIdFromHash(x)).ToList();
-                images = (await Task.WhenAll(tasks)).ToList();
+                images = await _imageApi.GetImageIdFromHash(message.ImagesByHash);
+                var hashSet = images.Select(x => x.hash).ToHashSet();
+
+                if(message.ImagesByHash.Any(x => !hashSet.Contains(x)))
+                    throw new InvalidDataException("Invalid image hash");
             }
 
             ret.MessageId = Guid.NewGuid();

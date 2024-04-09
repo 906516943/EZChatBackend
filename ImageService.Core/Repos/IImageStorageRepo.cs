@@ -54,8 +54,8 @@ namespace ImageService.Core.Repos
 
         private (string Dir, string File) MakePath(string id) 
         {
-            var path = $"{_config.BaseDirectory}{id.Substring(0, 4)}/{id.Substring(4, 4)}/{id.Substring(8, 4)}/{id.Substring(12, 4)}/{id.Substring(16, 4)}/";
-            var file = $"{id.Substring(20)}";
+            var path = $"{_config.BaseDirectory}{id.Substring(0, 4)}/";
+            var file = $"{id.Substring(4)}";
 
             return (path, file);
         }

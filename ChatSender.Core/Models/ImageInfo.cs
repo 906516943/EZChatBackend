@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace ChatSender.Core.Models
 {
-    public record class ImageInfo(string ImgId, string? ThumbnailImgId);
+    public record class ImageInfo(string hash, string ImgId, string? ThumbnailImgId);
 }

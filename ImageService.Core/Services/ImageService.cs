@@ -25,7 +25,7 @@ namespace ImageService.Core.Services
 
         Task<Image?> FindImgFromHash(string hash);
 
-        Task<List<Image>?> FindImgFromHash(List<string> hashes);
+        Task<List<Image?>> FindImgFromHash(List<string> hashes);
 
         Task PutImage(Image img, Image thumbnailImg);
     }
@@ -72,26 +72,17 @@ namespace ImageService.Core.Services
             return null;
         }
 
-        public async Task<List<Image>?> FindImgFromHash(List<string> hashes)
+        public async Task<List<Image?>> FindImgFromHash(List<string> hashes)
         {
-            try
+            var ret = new List<Image?>();
+
+            foreach (var hash in hashes)
             {
-                var ret = new List<Image>();
-
-                foreach (var hash in hashes) 
-                {
-                    var item = await FindImgFromHash(hash);
-
-                    if (item is null)
-                        throw new InvalidDataException("Image hash not found");
-
-                    ret.Add(item);
-                }
-
-                return ret;
+                var item = await FindImgFromHash(hash);
+                ret.Add(item);
             }
-            catch { }
-            return null;
+
+            return ret;
         }
 
         public async Task<Image> MakeImg(byte[] img)
@@ -116,9 +107,8 @@ namespace ImageService.Core.Services
                 {
                     var reduceRatio = (double)_config.ThumbnailMaxSize / Math.Max(bitmap.Width, bitmap.Height);
                     var res = _core.ResizeBitmap(bitmap.GetRGBBuffer(), bitmap.Width, bitmap.Height, reduceRatio);
+                    var resizedBitMap = AnyBitmap.LoadAnyBitmapFromRGBBuffer(res.Buffer, res.Width, res.Height);
 
-                    var resizedBitMap = AnyBitmap.LoadAnyBitmapFromRGBBuffer(res.Buffer, res.Width, res.Height)
-                        .RotateFlip(AnyBitmap.RotateMode.Rotate180, AnyBitmap.FlipMode.None);
 
                     ret = resizedBitMap.ExportBytes(AnyBitmap.ImageFormat.Jpeg, _config.ThumbnailJpgQuality);
                 }

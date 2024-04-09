@@ -1,4 +1,4 @@
 ﻿namespace ImageService.Models
 {
-    public record class ImageInfo(string ImgId, string? ThumbnailImgId);
+    public record class ImageInfo(string hash, string ImgId, string? ThumbnailImgId);
 }
