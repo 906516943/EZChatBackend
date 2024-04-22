@@ -69,4 +69,18 @@ void CreateDb(WebApplication app)
         userContext.Ctx.SaveChanges();
     }
 
+
+    //create another channel for testing purpose
+    var worldChannelChinese = userContext.Groups.Where(x => x.Name == "世界频道").FirstOrDefault();
+    if (worldChannelChinese is null)
+    {
+        worldChannelChinese = new EzGroup()
+        {
+            Name = "世界频道"
+        };
+
+        userContext.Groups.Add(worldChannelChinese);
+
+        userContext.Ctx.SaveChanges();
+    }
 }

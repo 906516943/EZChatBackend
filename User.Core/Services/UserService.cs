@@ -47,9 +47,11 @@ namespace User.Core.Services
 
             //user default added to the world channel
             var worldChannelId = new Group(_repo, await _repo.GetGroupIdByName("World Channel"));
+            var worldChannelChinese = new Group(_repo, await _repo.GetGroupIdByName("世界频道"));
             var user = new Models.User(_repo, userId);
 
             await user.AddGroup(worldChannelId);
+            await user.AddGroup(worldChannelChinese);
 
             return user;
         }
