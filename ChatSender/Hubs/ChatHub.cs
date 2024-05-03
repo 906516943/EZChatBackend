@@ -21,7 +21,7 @@ namespace ChatSender.Hubs
             _logger = logger;
         }
 
-        public async Task<Guid?> SendMessage(Message msg)
+        public async Task<Message> SendMessage(Message msg)
         {
             try 
             {
@@ -55,7 +55,7 @@ namespace ChatSender.Hubs
                 }
 
 
-                return retMessage.MessageId;
+                return retMessage;
             
             }catch (Exception ex) 
             {
