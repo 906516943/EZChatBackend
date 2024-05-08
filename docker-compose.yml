@@ -84,6 +84,23 @@ services:
     volumes:
         - image-data:/var/lib/db-images
    
+  chat_history:
+    container_name: chat-history
+    image: ${DOCKER_REGISTRY-}chathistory
+    build:
+      context: .
+      dockerfile: ChatHistory/Dockerfile
+    networks:
+        - backend
+    ports:
+        - '10244:25569' 
+    environment:
+        - 'ASPNETCORE_HTTP_PORTS=25569'
+        - 'ASPNETCORE_ENVIRONMENT=Development'
+    configs:
+      - source: api-servers
+        target: /apiServers.json
+
   image_db:
     container_name: image-db
     image: mysql
@@ -129,5 +146,6 @@ volumes:
   db-user-data:
   image-data:
   db-image-data:
+
 
 

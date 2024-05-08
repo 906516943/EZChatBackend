@@ -1,5 +1,6 @@
 {
   "apiServers": {
+    "ChatHistoryApi": "http://chat-history:25569",
     "ImageApi": "http://image:25568",
     "UserApi": "http://user:25567",
     "ChatSenderApi": "http://chat-sender:25566",
